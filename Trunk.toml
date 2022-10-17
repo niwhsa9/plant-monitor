@@ -1,9 +1,0 @@
-[build]
-target = "src/client/index.html"
-release = false
-public_url = "/"
-dist = "../../dist"
-
-[[proxy]]
-rewrite = "/api"
-backend = "http://localhost:3030/"

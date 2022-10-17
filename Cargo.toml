@@ -1,28 +1,5 @@
-[package]
-name = "plant-monitor"
-version = "0.1.0"
-edition = "2021"
+[workspace]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-# cargo build trunk
-
-[dependencies]
-yew = "0.19"
-serde = "1.0.145"
-trunk = "0.16.0"
-reqwest = { version = "0.11", features = ["json"] }
-tokio = { version = "1", features = ["full"], optional = true}
-warp = {version = "0.3.3", optional = true}
-
-[features]
-# Defines a feature named `webp` that does not enable any other features.
-server-deps = ["tokio", "warp"]
-
-[[bin]]
-name = "server"
-path = "src/server/main.rs"
-required-features = ["server-deps"]
-
-[[bin]]
-name = "client"
-path = "src/client/main.rs"
+members = [
+    "client", "server"
+]
