@@ -23,5 +23,5 @@ TODO
 2. Install Rust
 3. Get trunk `cargo install trunk`
 4. Add WASM target `rustup target add wasm32-unknown-unknown`
-5. Run the server: `cargo run --bin server`
-6. Run the client: `trunk serve --open`
+5. Run the server: `cargo run --bin plant-monitor-server`
+6. Run the client: `cd client && trunk serve --open`
