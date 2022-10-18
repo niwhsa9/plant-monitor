@@ -10,3 +10,8 @@ edition = "2021"
 yew = "0.19"
 serde = "1.0.145"
 warp = {version = "0.3.3", optional = true}
+reqwest = "0.11.12"
+wasm-bindgen = "0.2.51"
+wasm-bindgen-futures = "0.4.1"
+log = "0.4.6"
+wasm-logger = "0.2.0"
