@@ -6,7 +6,35 @@ use reqwasm::http::*;
 #[function_component(App)]
 fn app() -> Html {
     html! {
+        <> 
         <h1>{ "Hello World" }</h1>
+        <PlantWidget/>
+        </>
+    }
+}
+
+pub struct PlantWidget {
+    name : String  
+}
+
+impl Component for PlantWidget {
+    type Message = ();
+    type Properties = ();
+
+    fn create(ctx : &Context<Self>) -> Self {
+        Self{name : String::from("lol")}
+    }
+
+    fn update(&mut self, ctx : &Context<Self>, msg: Self::Message) -> bool {
+        false
+    }
+
+    fn view(&self, ctx: &Context<Self>) -> Html {
+        html! {
+            <div class="plant-widget">
+                <p>{&self.name}</p>
+            </div>
+        }
     }
 }
 
@@ -23,16 +51,10 @@ fn main() {
 #[wasm_bindgen]
 pub async fn run() {
     log::info!("here");
-    //let client = reqwest::Client::new();
-    //client.get("/api").send().await.unwrap();
     Request::get("/api")
         .send()
         .await
         .unwrap();
-    //match res {
-    //    Ok(_) => log::info!("good"),
-    //    Err(_) => log::error!("bad")
-    //};
     log::info!("donea");
 
 
