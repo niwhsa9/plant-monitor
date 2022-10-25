@@ -7,6 +7,7 @@ This is a web application to monitor the health of your plants
 * This application is written purely in Rust from end-to-end
 * Rust WASM via Yew is used for the front-end 
 * The server side application stores data with SQLite
+* Warp is used to map api requests with Tokio as the async backend 
 * Messages are serialized into JSON with Serde to pass around through HTTP 
 * Trunk is used to deploy WASM
 
