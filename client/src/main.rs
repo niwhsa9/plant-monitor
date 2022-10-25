@@ -5,6 +5,7 @@ use reqwasm::http::*;
 
 #[function_component(App)]
 fn app() -> Html {
+    // Initial request to determine the number of widgets
     html! {
         <> 
         <h1>{ "Hello World" }</h1>
@@ -30,6 +31,10 @@ impl Component for PlantWidget {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
+        // Get the data from the server for the widget
+        // Request an image from the API for the particular plant
+        // Get the resource URL for the image tag
+    
         html! {
             <div class="plant-widget">
                 <p>{&self.name}</p>
@@ -56,6 +61,4 @@ pub async fn run() {
         .await
         .unwrap();
     log::info!("donea");
-
-
 }
