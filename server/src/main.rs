@@ -4,9 +4,9 @@ mod handlers;
 mod filters {
     use super::handlers;
     use warp::{Filter};
-    pub fn get_plants() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
-        warp::path!("plants").map(handlers::get_plants())
-    }
+    //pub fn get_plants() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
+    //    warp::path!("plants").map(handlers::get_plants())
+    //}
 }
 
 #[tokio::main]

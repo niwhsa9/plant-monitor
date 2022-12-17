@@ -8,7 +8,8 @@ fn app() -> Html {
     // Initial request to determine the number of widgets
     html! {
         <> 
-        <h1>{ "Hello World" }</h1>
+        <PlantWidget/>
+        <PlantWidget/>
         <PlantWidget/>
         </>
     }
@@ -37,7 +38,7 @@ impl Component for PlantWidget {
     
         html! {
             <div class="plant-widget">
-                <p>{&self.name}</p>
+                <h1>{&self.name}</h1>
             </div>
         }
     }
