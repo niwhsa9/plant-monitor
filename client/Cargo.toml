@@ -7,7 +7,7 @@ edition = "2021"
 # cargo build trunk
 
 [dependencies]
-yew = "0.19"
+yew = {version = "0.20", features = ["csr"] }
 serde = "1.0.145"
 warp = {version = "0.3.3", optional = true}
 reqwest = "0.11.12"
