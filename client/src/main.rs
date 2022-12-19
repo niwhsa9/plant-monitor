@@ -3,14 +3,18 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 use reqwasm::http::*;
 
+pub struct Dashboard {
+    num_widgets : u32,
+}
+
+// TODO: change this to regular Component and do server transaction in create() to avoid repeat
 #[function_component(App)]
 fn app() -> Html {
     // Initial request to determine the number of widgets
+    let v = vec![1, 2, 3, 4, 5];
     html! {
         <> 
-        <PlantWidget/>
-        <PlantWidget/>
-        <PlantWidget/>
+        {v.into_iter().map(|_id| {html!{ <PlantWidget/>} } ).collect::<Html>()}
         </>
     }
 }
@@ -24,6 +28,7 @@ impl Component for PlantWidget {
     type Properties = ();
 
     fn create(ctx : &Context<Self>) -> Self {
+        log::info!("Widget create");
         Self{name : String::from("lol")}
     }
 
@@ -36,6 +41,7 @@ impl Component for PlantWidget {
         // Request an image from the API for the particular plant
         // Get the resource URL for the image tag
     
+        log::info!("Widget rerender");
         html! {
             <div class="plant-widget">
                 <h1>{&self.name}</h1>
@@ -47,19 +53,14 @@ impl Component for PlantWidget {
 //#[wasm_bindgen]
 fn main() {
     wasm_logger::init(wasm_logger::Config::default());
-    log::info!("Some info");
-    
     spawn_local( run() );
     yew::start_app::<App>();
-    log::info!("Some info");
 }
 
 #[wasm_bindgen]
 pub async fn run() {
-    log::info!("here");
     Request::get("/api")
         .send()
         .await
         .unwrap();
-    log::info!("donea");
 }
