@@ -6,7 +6,7 @@ use reqwasm::http::*;
 /*
  * Plant Display Widget
  */
-#[derive(Properties, PartialEq)]
+#[derive(Clone, Properties, PartialEq)]
 pub struct PlantWidgetProps {
     pub name: String,
 }
@@ -25,7 +25,6 @@ fn PlantWidget(props : &PlantWidgetProps) -> Html {
  * Top Level Application Dashboard
  */
 pub struct Dashboard {
-    num_plants : u32,
     plants : Vec<PlantWidgetProps>
 }
 
@@ -35,27 +34,20 @@ impl Component for Dashboard {
 
     fn create(ctx : &Context<Self>) -> Self {
         // Load application information from server 
+
+        // Request an image from the API for the particular plant
+        // Get the resource URL for the image tag
         let plant_widgets = vec![ 
             PlantWidgetProps{name : String::from("Claude")}, 
             PlantWidgetProps{ name : String::from("Jacobi")} 
         ];
-        Self{num_plants : 0, plants : plant_widgets}
-    }
-
-    fn update(&mut self, ctx : &Context<Self>, msg: Self::Message) -> bool {
-        false
+        Self{plants : plant_widgets}
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        // Get the data from the server for the widget
-        // Request an image from the API for the particular plant
-        // Get the resource URL for the image tag
-    
-        log::info!("Widget rerender");
-        let v = vec![1, 2, 3, 4, 5];
         html! {
             <> 
-            {v.into_iter().map(|_id| {html!{ <PlantWidget name="Plant 1"/>} } ).collect::<Html>()}
+            {self.plants.iter().map(|plant| { html! {<PlantWidget ..plant.clone()/>} }).collect::<Html>()}
             </>
         }
     }
@@ -63,7 +55,6 @@ impl Component for Dashboard {
 }
 
 
-//#[wasm_bindgen]
 fn main() {
     wasm_logger::init(wasm_logger::Config::default());
     spawn_local( run() );
@@ -71,7 +62,6 @@ fn main() {
 
 }
 
-#[wasm_bindgen]
 pub async fn run() {
     Request::get("/api")
         .send()
