@@ -7,13 +7,8 @@ use messages::msg::{Point, PlantData};
 /*
  * Plant Display Widget
  */
-#[derive(Clone, Properties, PartialEq)]
-pub struct PlantWidgetProps {
-    pub name: String,
-}
-
 #[function_component]
-fn PlantWidget(props : &PlantWidgetProps) -> Html {
+fn PlantWidget(props : &messages::msg::PlantData) -> Html {
     log::info!("Widget rerender");
     html! {
         <div class="plant-widget">
@@ -26,8 +21,7 @@ fn PlantWidget(props : &PlantWidgetProps) -> Html {
  * Top Level Application Dashboard
  */
 pub struct Dashboard {
-    loading : Box<bool>,
-    plants : Vec<PlantWidgetProps>,
+    plants : Option<Vec<PlantData>>
 }
 
 pub enum DashboardMsg {
@@ -36,16 +30,17 @@ pub enum DashboardMsg {
 impl Dashboard {
     // Retrieves plant data from the server for the application 
     // and issues callback on completion
-    fn get_plant_data(completed_cb : Callback<(), ()>) {
+    pub fn get_plant_data(&self, completed_cb : Callback<Vec<PlantData>>) {
         spawn_local( async move { 
             // HTTP GET data from server
             let r = Request::get("/api/plant_data")
                 .send()
                 .await
-                .unwrap().json::<PlantData>().await.unwrap();
+                .unwrap().json::<Vec<PlantData>>().await.unwrap();
 
+            println!("{}", r[0].name);
             // Signal completion
-            completed_cb.emit(());      
+            //completed_cb.emit(());      
         });
     }
 }
@@ -75,18 +70,24 @@ impl Component for Dashboard {
         // Request an image from the API for the particular plant
         // Get the resource URL for the image tag
         let plant_widgets = vec![ 
-            PlantWidgetProps{name : String::from("Claude")}, 
-            PlantWidgetProps{ name : String::from("Jacobi")} 
+            PlantData{name : String::from("Claude"), img_path : String::from("")}, 
+            PlantData{name : String::from("Jacobi"), img_path : String::from("")} 
         ];
-        Self{loading : Box::new(true), plants : plant_widgets}
+        let dash = Self{plants : Some(plant_widgets)};
+        let data_cb = ctx.link().callback(Self::Message::DataReady);
+        //dash.get_plant_data(data_cb);
+        dash
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        html! {
-            <> 
-            {self.plants.iter().map(|plant| { html! {<PlantWidget ..plant.clone()/>} }).collect::<Html>()}
-            </>
-        }
+        match &self.plants {
+            Some(p) => html! {
+                <> 
+                {p.iter().map(|plant| { html! {<PlantWidget ..plant.clone()/>} }).collect::<Html>()}
+                </>
+            },
+            None => html! {}
+        } 
     }
 
 }
