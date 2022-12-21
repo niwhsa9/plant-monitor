@@ -2,7 +2,7 @@ use yew::prelude::*;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 use reqwasm::http::*;
-use messages::msg::{Point};
+use messages::msg::{Point, PlantData};
 
 /*
  * Plant Display Widget
@@ -31,7 +31,7 @@ pub struct Dashboard {
 }
 
 pub enum DashboardMsg {
-    DataReady()
+    DataReady(Vec<PlantData>)
 }
 impl Dashboard {
     // Retrieves plant data from the server for the application 
@@ -39,10 +39,10 @@ impl Dashboard {
     fn get_plant_data(completed_cb : Callback<(), ()>) {
         spawn_local( async move { 
             // HTTP GET data from server
-            let r = Request::get("/api/test")
+            let r = Request::get("/api/plant_data")
                 .send()
                 .await
-                .unwrap();
+                .unwrap().json::<PlantData>().await.unwrap();
 
             // Signal completion
             completed_cb.emit(());      
@@ -56,7 +56,7 @@ impl Component for Dashboard {
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            Self::Message::DataReady() => {
+            Self::Message::DataReady(data) => {
 
             }
         }
