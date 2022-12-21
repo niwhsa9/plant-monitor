@@ -12,7 +12,7 @@ async fn main() {
         warp::path("plant_data").map( || { 
             // [Temp] construct vector of Plant Data
             let p = vec![
-                PlantData{ name : String::from("Jacobi"), img_path : String::from("")},
+                PlantData{ name : String::from("Wernher"), img_path : String::from("")},
                 PlantData{ name : String::from("Claude"), img_path : String::from("")},
             ];
             // Return data

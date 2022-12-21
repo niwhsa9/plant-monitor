@@ -1,15 +1,17 @@
+use std::time::Duration;
+
 use yew::prelude::*;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 use reqwasm::http::*;
 use messages::msg::{Point, PlantData};
+use yew::platform::time::*;
 
 /*
  * Plant Display Widget
  */
 #[function_component]
 fn PlantWidget(props : &messages::msg::PlantData) -> Html {
-    log::info!("Widget rerender");
     html! {
         <div class="plant-widget">
             <h1>{&props.name}</h1>
@@ -32,15 +34,15 @@ impl Dashboard {
     // and issues callback on completion
     pub fn get_plant_data(&self, completed_cb : Callback<Vec<PlantData>>) {
         spawn_local( async move { 
-            // HTTP GET data from server
+            // HTTP get data array from server
             let r = Request::get("/api/plant_data")
                 .send()
                 .await
                 .unwrap().json::<Vec<PlantData>>().await.unwrap();
 
-            println!("{}", r[0].name);
+            //yew::platform::time::sleep(Duration::from_secs(5)).await;
             // Signal completion
-            //completed_cb.emit(());      
+            completed_cb.emit(r);      
         });
     }
 }
@@ -52,31 +54,18 @@ impl Component for Dashboard {
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Self::Message::DataReady(data) => {
-
+                self.plants = Some(data);
+                return true;
             }
         }
-        false
     }
 
     fn create(ctx : &Context<Self>) -> Self {
-        // Load application information from server 
-        let loading = Box::new(true);
-        let mut l2 = loading.clone();
-        let q = async move { 
-            *l2 = false; 
-            
-        };
-        spawn_local( q );
-        // Request an image from the API for the particular plant
-        // Get the resource URL for the image tag
-        let plant_widgets = vec![ 
-            PlantData{name : String::from("Claude"), img_path : String::from("")}, 
-            PlantData{name : String::from("Jacobi"), img_path : String::from("")} 
-        ];
-        let dash = Self{plants : Some(plant_widgets)};
+        // Create the dashboard, register callback to populate data, and dispatch GET
+        let dash = Self{plants : None};
         let data_cb = ctx.link().callback(Self::Message::DataReady);
-        //dash.get_plant_data(data_cb);
-        dash
+        dash.get_plant_data(data_cb);
+        return dash
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
@@ -86,7 +75,12 @@ impl Component for Dashboard {
                 {p.iter().map(|plant| { html! {<PlantWidget ..plant.clone()/>} }).collect::<Html>()}
                 </>
             },
-            None => html! {}
+            // Display loading screen while waiting for GET
+            None => html! {
+                <>
+                <p>{"Loading... "}</p>
+                </>
+            }
         } 
     }
 
@@ -95,18 +89,5 @@ impl Component for Dashboard {
 
 fn main() {
     wasm_logger::init(wasm_logger::Config::default());
-    // Get the data we need from the server, it will callback 
-    spawn_local( run() );
     yew::Renderer::<Dashboard>::new().render();
-
-}
-
-pub async fn run() {
-    let r = Request::get("/api/test")
-        .send()
-        .await
-        .unwrap();
-    //log::info!("{}", r.text().await.unwrap());
-    let p = r.json::<Point>().await.unwrap();
-    log::info!("px {} py {}", p.x, p.y);
 }
