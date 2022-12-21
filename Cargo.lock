@@ -917,6 +917,7 @@ name = "plant-monitor-client"
 version = "0.1.0"
 dependencies = [
  "log",
+ "messages",
  "reqwasm",
  "reqwest",
  "serde",

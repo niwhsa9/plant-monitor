@@ -2,6 +2,7 @@ use yew::prelude::*;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 use reqwasm::http::*;
+use messages::msg::{Point};
 
 /*
  * Plant Display Widget
@@ -96,8 +97,9 @@ fn main() {
 }
 
 pub async fn run() {
-    Request::get("/api")
+    let r = Request::get("/api/test")
         .send()
         .await
         .unwrap();
+    log::info!("{}", r.text().await.unwrap());
 }

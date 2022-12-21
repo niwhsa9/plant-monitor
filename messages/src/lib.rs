@@ -4,7 +4,7 @@ pub mod msg {
 
     #[derive(Serialize, Deserialize, Debug)]
     pub struct Point {
-        x: i32,
-        y: i32,
+        pub x: i32,
+        pub y: i32,
     }
 }
