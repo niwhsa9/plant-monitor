@@ -39,6 +39,10 @@ impl Dashboard {
     fn get_plant_data(completed_cb : Callback<(), ()>) {
         spawn_local( async move { 
             // HTTP GET data from server
+            let r = Request::get("/api/test")
+                .send()
+                .await
+                .unwrap();
 
             // Signal completion
             completed_cb.emit(());      
@@ -101,5 +105,7 @@ pub async fn run() {
         .send()
         .await
         .unwrap();
-    log::info!("{}", r.text().await.unwrap());
+    //log::info!("{}", r.text().await.unwrap());
+    let p = r.json::<Point>().await.unwrap();
+    log::info!("px {} py {}", p.x, p.y);
 }
