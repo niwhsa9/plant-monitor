@@ -1,24 +1,23 @@
 use warp::{Filter};
-mod handlers;
+use messages::msg::{Point};
 
-mod filters {
-    use super::handlers;
-    use warp::{Filter};
-    //pub fn get_plants() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
-    //    warp::path!("plants").map(handlers::get_plants())
-    //}
-}
+mod handlers;
 
 #[tokio::main]
 async fn main() {
     println!("Server starting");
 
+    let data_route = 
+        warp::path("plant_data").map( || "Response" );
 
-    let routes = warp::any().map(|| {
-        println!("get req");
-        //#Response::builder().header("test", "val").body("lol")
-        "hello world"
-    });
-    handlers::get_plants();    
+    let test_route = 
+        warp::path("test").map( || "Test Reply" );
+
+    let routes = 
+        warp::get().and(
+            data_route
+            .or(test_route)
+        );
+
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
 }
