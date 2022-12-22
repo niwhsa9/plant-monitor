@@ -7,7 +7,7 @@
     border-radius: 12px;
     background-color : #2e3b52;
     color: white;
-    height: 500px;
+    height: fit-content;
     text-align: center;
 }
 
@@ -15,8 +15,8 @@
     color: white;
 }
 .plant-widget img {
-    max-width:70%;
-    max-height:70%;
+    max-width:80%;
+    margin-bottom: 20%;
 }
 
 
