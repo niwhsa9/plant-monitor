@@ -14,6 +14,10 @@
 .plant-widget h1 {
     color: white;
 }
+.plant-widget img {
+    max-width:70%;
+    max-height:70%;
+}
 
 
 body {

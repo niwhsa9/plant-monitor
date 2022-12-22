@@ -12,13 +12,14 @@ async fn main() {
         warp::path("plant_data").map( || { 
             // [Temp] construct vector of Plant Data
             let p = vec![
-                PlantData{ name : String::from("Wernher"), img_path : String::from("")},
-                PlantData{ name : String::from("Claude"), img_path : String::from("")},
+                PlantData{ name : String::from("Wernher"), img_path : String::from("/api/img/plant.jpg")},
+                PlantData{ name : String::from("Claude"), img_path : String::from("/api/img/plant.jpg")},
             ];
             // Return data
             warp::reply::json(&p)
             }
         );
+    let image_route = warp::path("img") .and(warp::fs::dir("temp"));
 
     let test_route = 
         warp::path("test").map( || {
@@ -32,6 +33,7 @@ async fn main() {
         warp::get().and(
             data_route
             .or(test_route)
+            .or(image_route)
         );
 
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;

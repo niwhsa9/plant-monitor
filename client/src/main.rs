@@ -1,20 +1,18 @@
-use std::time::Duration;
-
 use yew::prelude::*;
-use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 use reqwasm::http::*;
-use messages::msg::{Point, PlantData};
-use yew::platform::time::*;
+use messages::msg::{PlantData};
 
 /*
  * Plant Display Widget
  */
 #[function_component]
 fn PlantWidget(props : &messages::msg::PlantData) -> Html {
+    let s = (&props).img_path.clone();
     html! {
         <div class="plant-widget">
             <h1>{&props.name}</h1>
+            <img src={s}/> 
         </div>
     }
 }
@@ -25,7 +23,6 @@ fn PlantWidget(props : &messages::msg::PlantData) -> Html {
 pub struct Dashboard {
     plants : Option<Vec<PlantData>>
 }
-
 pub enum DashboardMsg {
     DataReady(Vec<PlantData>)
 }
@@ -40,7 +37,6 @@ impl Dashboard {
                 .await
                 .unwrap().json::<Vec<PlantData>>().await.unwrap();
 
-            //yew::platform::time::sleep(Duration::from_secs(5)).await;
             // Signal completion
             completed_cb.emit(r);      
         });
