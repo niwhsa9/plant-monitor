@@ -13,6 +13,7 @@ fn PlantWidget(props : &messages::msg::PlantData) -> Html {
         <div class="plant-widget">
             <h1>{&props.name}</h1>
             <img src={s}/> 
+            <p>{String::from("Last watered: ")}</p>
         </div>
     }
 }

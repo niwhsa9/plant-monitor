@@ -13,7 +13,11 @@ async fn main() {
             // [Temp] construct vector of Plant Data
             let p = vec![
                 PlantData{ name : String::from("Wernher"), img_path : String::from("/api/img/plant.jpg")},
-                PlantData{ name : String::from("Claude"), img_path : String::from("/api/img/plant.jpg")},
+                PlantData{ name : String::from("Claude"), img_path : String::from("/api/img/plant2.jpg")},
+                PlantData{ name : String::from("Wernher2"), img_path : String::from("/api/img/plant.jpg")},
+                PlantData{ name : String::from("Wernher3"), img_path : String::from("/api/img/plant.jpg")},
+                PlantData{ name : String::from("Wernher3"), img_path : String::from("/api/img/plant.jpg")},
+                PlantData{ name : String::from("Wernher3"), img_path : String::from("/api/img/plant.jpg")},
             ];
             // Return data
             warp::reply::json(&p)
