@@ -69,7 +69,13 @@ impl Component for Dashboard {
         match &self.plants {
             Some(p) => html! {
                 <> 
-                {p.iter().map(|plant| { html! {<PlantWidget ..plant.clone()/>} }).collect::<Html>()}
+                <div class="topbar">
+                    <a class="active" href="#home">{String::from("Home")}</a>
+                    <a href="#home">{String::from("Data")}</a>
+                </div>
+                <div class="widgets-grid">
+                    {p.iter().map(|plant| { html! {<PlantWidget ..plant.clone()/>} }).collect::<Html>()}
+                </div>
                 </>
             },
             // Display loading screen while waiting for GET
