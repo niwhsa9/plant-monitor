@@ -3,6 +3,7 @@ use wasm_bindgen_futures::spawn_local;
 use reqwasm::http::*;
 use messages::msg::{PlantData};
 use std::rc::{Rc};
+use chrono::{DateTime, Local};
 /*
  * Plant Display Widget
  */
@@ -10,23 +11,37 @@ use std::rc::{Rc};
 #[derive(Properties, PartialEq, Clone)]
 pub struct PlantWidgetProps {
     // TODO: this one really could be a Weak
-    plant_data : Rc<PlantData> 
+    plant_data : Rc<PlantData>
 }
 
 
 #[function_component]
 fn PlantWidget(props : &PlantWidgetProps) -> Html {
     let s = props.plant_data.img_path.clone();
+
+
+    let cur_time: DateTime<Local> = Local::now();
+    let date_local : DateTime<Local> = DateTime::from(props.plant_data.last_water_time);
+    let diff = cur_time - date_local;
+    let date_str = 
+        if(diff.num_days() > 0) { 
+            format!("{} days", diff.num_days()) 
+        } else { 
+            format!("{} hours", diff.num_hours()) 
+        };
+    //let date_str = format!("{}", date_local.format("%A, %b %d"));
+
     html! {
         <div class="plant-widget">
             <h1>{&props.plant_data.name}</h1>
             <img src={s}/> 
 
-            <button onclick={Callback::from(|_| ())}>
+            <button onclick={Callback::from(|_| {
+            } )}>
                 { "Reset" }
             </button>
             <p>
-                {String::from("Last watered: ")}
+                { (String::from("Last watered: ") + &date_str) }
             </p>
         </div>
     }

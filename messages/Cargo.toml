@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 serde = {version = "1.0.151", features = ["derive"]}
 yew = {version = "0.20", features = ["csr"] }
+chrono = "0.4.23"
