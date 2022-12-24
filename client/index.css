@@ -9,7 +9,7 @@
     transition: 0.3s;
 }
 .plant-widget:hover {
-  box-shadow: 0 8px 16px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 16px 0 rgba(185, 185, 185, 0.2);
 }
 
 .plant-widget h1 {
@@ -35,7 +35,7 @@ body {
     /*background-color : #6a5acd;*/
     background-color : #41577e;
     display : grid;
-    grid-template-columns: repeat(auto-fit, 500px);
+    grid-template-columns: repeat(auto-fit, 400px);
     grid-row-gap: 20px;
     grid-column-gap: 50px;
     justify-content: center;
@@ -47,7 +47,6 @@ body {
   overflow: hidden;
 }
 
-/* Style the links inside the navigation bar */
 .topbar a {
   float: left;
   color: #f2f2f2;
@@ -55,16 +54,15 @@ body {
   padding: 14px 16px;
   text-decoration: none;
   font-size: 17px;
+
 }
 
-/* Change the color of links on hover */
 .topbar a:hover {
   background-color: #ddd;
   color: black;
 }
 
-/* Add a color to the active/current link */
 .topbar a.active {
-  background-color: #04AA6D;
+  background-color: #038b59;
   color: white;
 }

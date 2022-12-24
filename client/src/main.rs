@@ -2,16 +2,23 @@ use yew::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 use reqwasm::http::*;
 use messages::msg::{PlantData};
-
+use std::rc::{Rc};
 /*
  * Plant Display Widget
  */
+
+#[derive(Properties, PartialEq, Clone)]
+pub struct PlantWidgetProps {
+    // TODO: this one really could be a Weak
+    plant_data : Rc<PlantData> 
+}
+
 #[function_component]
-fn PlantWidget(props : &messages::msg::PlantData) -> Html {
-    let s = (&props).img_path.clone();
+fn PlantWidget(props : &PlantWidgetProps) -> Html {
+    let s = props.plant_data.img_path.clone();
     html! {
         <div class="plant-widget">
-            <h1>{&props.name}</h1>
+            <h1>{&props.plant_data.name}</h1>
             <img src={s}/> 
             <p>{String::from("Last watered: ")}</p>
         </div>
@@ -22,7 +29,7 @@ fn PlantWidget(props : &messages::msg::PlantData) -> Html {
  * Top Level Application Dashboard
  */
 pub struct Dashboard {
-    plants : Option<Vec<PlantData>>
+    plants : Option<Vec<Rc<PlantData>>>
 }
 pub enum DashboardMsg {
     DataReady(Vec<PlantData>)
@@ -51,7 +58,9 @@ impl Component for Dashboard {
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Self::Message::DataReady(data) => {
-                self.plants = Some(data);
+                // Need to convert Vec<PlantData> into Vec<Rc<PlantData>>
+                let v = data.into_iter().map(|x| { Rc::new(x) } ).collect();
+                self.plants = Some(v);
                 return true;
             }
         }
@@ -74,7 +83,7 @@ impl Component for Dashboard {
                     <a href="#home">{String::from("Data")}</a>
                 </div>
                 <div class="widgets-grid">
-                    {p.iter().map(|plant| { html! {<PlantWidget ..plant.clone()/>} }).collect::<Html>()}
+                    {p.iter().map(|plant| { html! {<PlantWidget plant_data={plant}/>} }).collect::<Html>()}
                 </div>
                 </>
             },
