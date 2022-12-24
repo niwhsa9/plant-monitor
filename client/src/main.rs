@@ -13,6 +13,7 @@ pub struct PlantWidgetProps {
     plant_data : Rc<PlantData> 
 }
 
+
 #[function_component]
 fn PlantWidget(props : &PlantWidgetProps) -> Html {
     let s = props.plant_data.img_path.clone();
@@ -20,7 +21,13 @@ fn PlantWidget(props : &PlantWidgetProps) -> Html {
         <div class="plant-widget">
             <h1>{&props.plant_data.name}</h1>
             <img src={s}/> 
-            <p>{String::from("Last watered: ")}</p>
+
+            <button onclick={Callback::from(|_| ())}>
+                { "Reset" }
+            </button>
+            <p>
+                {String::from("Last watered: ")}
+            </p>
         </div>
     }
 }
@@ -50,7 +57,6 @@ impl Dashboard {
         });
     }
 }
-
 impl Component for Dashboard {
     type Message = DashboardMsg;
     type Properties = ();

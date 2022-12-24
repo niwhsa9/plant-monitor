@@ -22,6 +22,16 @@
 .plant-widget p {
     font-size: 20px;
 }
+.plant-widget button {
+  text-align: center;
+  border-color: #3a8d3d;
+  background-color: #4CAF50; /* Green */
+  color: white;
+  padding: 5px 10px;
+  display: block;
+  margin: auto;
+  font-size: 12px;
+}
 
 body {
     background-color : #41577e;
