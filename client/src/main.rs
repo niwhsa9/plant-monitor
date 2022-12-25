@@ -24,7 +24,7 @@ fn PlantWidget(props : &PlantWidgetProps) -> Html {
     let date_local : DateTime<Local> = DateTime::from(props.plant_data.last_water_time);
     let diff = cur_time - date_local;
     let date_str = 
-        if(diff.num_days() > 0) { 
+        if diff.num_days() > 0 { 
             format!("{} days", diff.num_days()) 
         } else { 
             format!("{} hours", diff.num_hours()) 

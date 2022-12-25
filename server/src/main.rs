@@ -7,7 +7,33 @@ mod handlers;
 #[tokio::main]
 async fn main() {
     println!("Server starting");
+
     // Issue database transaction and cache
+    let connection = sqlite::open("plants.db").unwrap();
+    let query = "
+        CREATE TABLE IF NOT EXISTS plants (name TEXT, img TEXT, water DATETIME, PRIMARY KEY (name));
+        INSERT OR IGNORE INTO plants VALUES ('Claude', '/api/img/plant.jpg', '2022-09-24 09:05:00' );
+        INSERT OR IGNORE INTO plants VALUES ('Jacobi', '/api/img/plant.jpg', '2022-09-25 09:05:00' );
+    ";
+    connection.execute(query).unwrap();
+    
+    let query = "SELECT * from plants";
+    for row in connection
+        .prepare(query)
+        .unwrap()
+        .into_iter()
+        .map(|row| row.unwrap())
+    {
+        let e = PlantData {
+            name : String::from(row.read::<&str, _>("name")),
+            img_path : String::from(row.read::<&str, _>("img")),
+            last_water_time : Utc.datetime_from_str(row.read::<&str, _>("water"), "").unwrap(),
+        };
+        println!("name = {}", row.read::<&str, _>("name"));
+        println!("water = {}", row.read::<&str, _>("img"));
+        println!("water = {}", row.read::<&str, _>("water"));
+    }
+
 
     let data_route = 
         warp::path("plant_data").map( || { 

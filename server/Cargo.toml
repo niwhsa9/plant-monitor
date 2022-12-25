@@ -11,4 +11,5 @@ serde = "1.0.145"
 tokio = { version = "1", features = ["full"]}
 warp = {version = "0.3.3"}
 chrono = "0.4.23"
+sqlite = "0.30.3"
 messages = { path = "../messages" }
