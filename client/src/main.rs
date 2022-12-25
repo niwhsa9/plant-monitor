@@ -3,7 +3,9 @@ use wasm_bindgen_futures::spawn_local;
 use reqwasm::http::*;
 use messages::msg::{PlantData};
 use std::rc::{Rc};
-use chrono::{DateTime, Local};
+use chrono::{DateTime, Local, Utc};
+use std::cell::RefCell;
+
 /*
  * Plant Display Widget
  */
@@ -11,17 +13,21 @@ use chrono::{DateTime, Local};
 #[derive(Properties, PartialEq, Clone)]
 pub struct PlantWidgetProps {
     // TODO: this one really could be a Weak
-    plant_data : Rc<PlantData>
+    // Mutable ref counted pointer is necessary here becasue 
+    // Yew does not support lifetime annotation in function
+    // components so single-ownership with non-owning 
+    // references is not valid.
+    plant_data : Rc<RefCell<PlantData>>
 }
 
 
 #[function_component]
 fn PlantWidget(props : &PlantWidgetProps) -> Html {
-    let s = props.plant_data.img_path.clone();
+    let s = props.plant_data.borrow().img_path.clone();
 
 
     let cur_time: DateTime<Local> = Local::now();
-    let date_local : DateTime<Local> = DateTime::from(props.plant_data.last_water_time);
+    let date_local : DateTime<Local> = DateTime::from(props.plant_data.borrow().last_water_time);
     let diff = cur_time - date_local;
     let date_str = 
         if diff.num_days() > 0 { 
@@ -30,14 +36,18 @@ fn PlantWidget(props : &PlantWidgetProps) -> Html {
             format!("{} hours", diff.num_hours()) 
         };
     //let date_str = format!("{}", date_local.format("%A, %b %d"));
+    let q = props.plant_data.clone();
+    let reset_cb = Callback::from(move |_ : MouseEvent| {
+                q.borrow_mut().last_water_time = Utc::now();
+                ()
+            } );
 
     html! {
         <div class="plant-widget">
-            <h1>{&props.plant_data.name}</h1>
+            <h1>{&props.plant_data.borrow().name}</h1>
             <img src={s}/> 
 
-            <button onclick={Callback::from(|_| {
-            } )}>
+            <button onclick={reset_cb}>
                 { "Reset" }
             </button>
             <p>
@@ -51,7 +61,8 @@ fn PlantWidget(props : &PlantWidgetProps) -> Html {
  * Top Level Application Dashboard
  */
 pub struct Dashboard {
-    plants : Option<Vec<Rc<PlantData>>>
+    // TODO: refactor out option since we can check empty vec
+    plants : Option<Vec<Rc<RefCell<PlantData>>>>
 }
 pub enum DashboardMsg {
     DataReady(Vec<PlantData>)
@@ -79,8 +90,8 @@ impl Component for Dashboard {
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Self::Message::DataReady(data) => {
-                // Need to convert Vec<PlantData> into Vec<Rc<PlantData>>
-                let v = data.into_iter().map(|x| { Rc::new(x) } ).collect();
+                // Need to convert Vec<PlantData> into Vec<Rc<RefCel<PlantData>>>
+                let v = data.into_iter().map(|x| { Rc::new(RefCell::new(x)) } ).collect();
                 self.plants = Some(v);
                 return true;
             }
