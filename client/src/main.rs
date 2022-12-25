@@ -16,7 +16,9 @@ pub struct PlantWidgetProps {
     // Mutable ref counted pointer is necessary here becasue 
     // Yew does not support lifetime annotation in function
     // components so single-ownership with non-owning 
-    // references is not valid.
+    // references is not valid. 
+    // TODO: Maybe refactor to use Yew's state hooks instead
+    // Each component can then own its own data
     plant_data : Rc<RefCell<PlantData>>
 }
 
@@ -24,6 +26,7 @@ pub struct PlantWidgetProps {
 #[function_component]
 fn PlantWidget(props : &PlantWidgetProps) -> Html {
     let s = props.plant_data.borrow().img_path.clone();
+    let counter = use_state(|| 0);
 
 
     let cur_time: DateTime<Local> = Local::now();
@@ -38,7 +41,9 @@ fn PlantWidget(props : &PlantWidgetProps) -> Html {
     //let date_str = format!("{}", date_local.format("%A, %b %d"));
     let q = props.plant_data.clone();
     let reset_cb = Callback::from(move |_ : MouseEvent| {
+            log::info!("here");
                 q.borrow_mut().last_water_time = Utc::now();
+                counter.set(1);
                 ()
             } );
 
