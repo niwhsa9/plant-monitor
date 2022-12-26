@@ -25,10 +25,7 @@ pub struct PlantWidgetProps {
 
 #[function_component]
 fn PlantWidget(props : &PlantWidgetProps) -> Html {
-    let s = props.plant_data.borrow().img_path.clone();
-    let counter = use_state(|| 0);
-
-
+    let trigger = use_force_update();
     let cur_time: DateTime<Local> = Local::now();
     let date_local : DateTime<Local> = DateTime::from(props.plant_data.borrow().last_water_time);
     let diff = cur_time - date_local;
@@ -38,19 +35,26 @@ fn PlantWidget(props : &PlantWidgetProps) -> Html {
         } else { 
             format!("{} hours", diff.num_hours()) 
         };
-    //let date_str = format!("{}", date_local.format("%A, %b %d"));
+
     let q = props.plant_data.clone();
     let reset_cb = Callback::from(move |_ : MouseEvent| {
             log::info!("here");
-                q.borrow_mut().last_water_time = Utc::now();
-                counter.set(1);
-                ()
+            let s = &q.borrow().name.clone();
+            q.borrow_mut().last_water_time = Utc::now();
+            trigger.force_update();
+            spawn_local( async move { 
+                let r = Request::post("/api/reset_plant")
+                    .body(s)
+                    .send()
+                    .await;
+            });
+            ()
             } );
 
     html! {
         <div class="plant-widget">
             <h1>{&props.plant_data.borrow().name}</h1>
-            <img src={s}/> 
+            <img src={props.plant_data.borrow().img_path.clone()}/> 
 
             <button onclick={reset_cb}>
                 { "Reset" }
