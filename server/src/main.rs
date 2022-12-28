@@ -42,6 +42,9 @@ async fn main() {
         );
     let image_route = warp::path("img") .and(warp::fs::dir("temp"));
 
+    //let reset_time_route = 
+    //   warp::path("reeset")
+
     let routes = 
         warp::get().and(
             data_route

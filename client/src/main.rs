@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use yew::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 use reqwasm::http::*;
@@ -28,19 +30,21 @@ fn PlantWidget(props : &PlantWidgetProps) -> Html {
             format!("{} hours", diff.num_hours()) 
         };
 
-    //let name = props.plant_data.name.clone();
+    // Button callback
+    let name = props.plant_data.name.clone();
     let reset_cb = Callback::from(move |_ : MouseEvent| {
-            log::info!("here");
-                last_water_time.set(Utc::now());
-                /* 
-                spawn_local( async move { 
-                                let r = Request::post("/api/reset_plant")
-                                    .body(props.plant_data.name.clone())
-                                    .send()
-                                    .await;
-                            });
-                            */
-                ()
+            last_water_time.set(Utc::now());
+            // indirection is necessary here due to lack of syntactic sugar for
+            // capture by clone
+            let name = name.clone();
+            spawn_local( async move { 
+                            let r = Request::post("/api/reset_plant")
+                                .body(name.clone())
+                                .send()
+                                .await;
+                        });
+                        
+            ()
             } );
 
     html! {
