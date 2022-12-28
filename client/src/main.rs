@@ -10,13 +10,6 @@ use chrono::{DateTime, Local, Utc};
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct PlantWidgetProps {
-    // TODO: this one really could be a Weak
-    // Mutable ref counted pointer is necessary here becasue 
-    // Yew does not support lifetime annotation in function
-    // components so single-ownership with non-owning 
-    // references is not valid. 
-    // TODO: Maybe refactor to use Yew's state hooks instead
-    // Each component can then own its own data
     plant_data : PlantData
 }
 
@@ -35,9 +28,18 @@ fn PlantWidget(props : &PlantWidgetProps) -> Html {
             format!("{} hours", diff.num_hours()) 
         };
 
+    //let name = props.plant_data.name.clone();
     let reset_cb = Callback::from(move |_ : MouseEvent| {
             log::info!("here");
                 last_water_time.set(Utc::now());
+                /* 
+                spawn_local( async move { 
+                                let r = Request::post("/api/reset_plant")
+                                    .body(props.plant_data.name.clone())
+                                    .send()
+                                    .await;
+                            });
+                            */
                 ()
             } );
 
@@ -60,7 +62,9 @@ fn PlantWidget(props : &PlantWidgetProps) -> Html {
  * Top Level Application Dashboard
  */
 pub struct Dashboard {
-    // TODO: refactor out option since we can check empty vec
+    // TODO: Refactor out - API design is poor, if API request is per plant
+    // then each PlantWidget may request its own data in create() and maintain
+    // its own internal state
     plants : Vec<PlantData>
 }
 pub enum DashboardMsg {
@@ -111,6 +115,7 @@ impl Component for Dashboard {
                 <p>{"Loading... "}</p>
                 </>
             },
+            // Display widgets when they are available
             _ => html! {
                 <> 
                 <div class="topbar">
