@@ -40,7 +40,7 @@ pub mod msg {
         pub y: i32,
     }
 
-    #[derive(Serialize, Deserialize, Debug, PartialEq)]
+    #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
     pub struct PlantData {
         pub name : String,
         pub img_path : String,

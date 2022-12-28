@@ -2,9 +2,7 @@ use yew::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 use reqwasm::http::*;
 use messages::msg::{PlantData};
-use std::rc::{Rc};
 use chrono::{DateTime, Local, Utc};
-use std::cell::RefCell;
 
 /*
  * Plant Display Widget
@@ -19,15 +17,16 @@ pub struct PlantWidgetProps {
     // references is not valid. 
     // TODO: Maybe refactor to use Yew's state hooks instead
     // Each component can then own its own data
-    plant_data : Rc<RefCell<PlantData>>
+    plant_data : PlantData
 }
 
 
 #[function_component]
 fn PlantWidget(props : &PlantWidgetProps) -> Html {
-    let trigger = use_force_update();
+    let last_water_time = use_state(|| props.plant_data.last_water_time);
+
     let cur_time: DateTime<Local> = Local::now();
-    let date_local : DateTime<Local> = DateTime::from(props.plant_data.borrow().last_water_time);
+    let date_local : DateTime<Local> = DateTime::from(*last_water_time);
     let diff = cur_time - date_local;
     let date_str = 
         if diff.num_days() > 0 { 
@@ -36,25 +35,16 @@ fn PlantWidget(props : &PlantWidgetProps) -> Html {
             format!("{} hours", diff.num_hours()) 
         };
 
-    let q = props.plant_data.clone();
     let reset_cb = Callback::from(move |_ : MouseEvent| {
             log::info!("here");
-            let s = &q.borrow().name.clone();
-            q.borrow_mut().last_water_time = Utc::now();
-            trigger.force_update();
-            spawn_local( async move { 
-                let r = Request::post("/api/reset_plant")
-                    .body(s)
-                    .send()
-                    .await;
-            });
-            ()
+                last_water_time.set(Utc::now());
+                ()
             } );
 
     html! {
         <div class="plant-widget">
-            <h1>{&props.plant_data.borrow().name}</h1>
-            <img src={props.plant_data.borrow().img_path.clone()}/> 
+            <h1>{props.plant_data.name.clone()}</h1>
+            <img src={props.plant_data.img_path.clone()}/> 
 
             <button onclick={reset_cb}>
                 { "Reset" }
@@ -71,7 +61,7 @@ fn PlantWidget(props : &PlantWidgetProps) -> Html {
  */
 pub struct Dashboard {
     // TODO: refactor out option since we can check empty vec
-    plants : Option<Vec<Rc<RefCell<PlantData>>>>
+    plants : Vec<PlantData>
 }
 pub enum DashboardMsg {
     DataReady(Vec<PlantData>)
@@ -99,9 +89,7 @@ impl Component for Dashboard {
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Self::Message::DataReady(data) => {
-                // Need to convert Vec<PlantData> into Vec<Rc<RefCel<PlantData>>>
-                let v = data.into_iter().map(|x| { Rc::new(RefCell::new(x)) } ).collect();
-                self.plants = Some(v);
+                self.plants = data;
                 return true;
             }
         }
@@ -109,29 +97,29 @@ impl Component for Dashboard {
 
     fn create(ctx : &Context<Self>) -> Self {
         // Create the dashboard, register callback to populate data, and dispatch GET
-        let dash = Self{plants : None};
+        let dash = Self{plants : vec![]};
         let data_cb = ctx.link().callback(Self::Message::DataReady);
         dash.get_plant_data(data_cb);
         return dash
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        match &self.plants {
-            Some(p) => html! {
+        match &self.plants.len() {
+            // Display loading screen while waiting for GET
+            0 => html! {
+                <>
+                <p>{"Loading... "}</p>
+                </>
+            },
+            _ => html! {
                 <> 
                 <div class="topbar">
                     <a class="active" href="#home">{String::from("Home")}</a>
                     <a href="#home">{String::from("Data")}</a>
                 </div>
                 <div class="widgets-grid">
-                    {p.iter().map(|plant| { html! {<PlantWidget plant_data={plant}/>} }).collect::<Html>()}
+                    {self.plants.iter().map(|plant| { html! {<PlantWidget plant_data={plant.clone()}/>} }).collect::<Html>()}
                 </div>
-                </>
-            },
-            // Display loading screen while waiting for GET
-            None => html! {
-                <>
-                <p>{"Loading... "}</p>
                 </>
             }
         } 
