@@ -2,9 +2,7 @@ use yew::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 use reqwasm::http::*;
 use messages::msg::{PlantData};
-use std::rc::{Rc};
 use chrono::{DateTime, Local, Utc};
-use std::cell::RefCell;
 
 /*
  * Plant Display Widget
@@ -25,10 +23,10 @@ pub struct PlantWidgetProps {
 
 #[function_component]
 fn PlantWidget(props : &PlantWidgetProps) -> Html {
-    let plant_data = use_state(|| props.plant_data.clone());
+    let last_water_time = use_state(|| props.plant_data.last_water_time);
 
     let cur_time: DateTime<Local> = Local::now();
-    let date_local : DateTime<Local> = DateTime::from(plant_data.last_water_time);
+    let date_local : DateTime<Local> = DateTime::from(*last_water_time);
     let diff = cur_time - date_local;
     let date_str = 
         if diff.num_days() > 0 { 
@@ -39,14 +37,14 @@ fn PlantWidget(props : &PlantWidgetProps) -> Html {
 
     let reset_cb = Callback::from(move |_ : MouseEvent| {
             log::info!("here");
-                plant_data.last_water_time = Utc::now();
+                last_water_time.set(Utc::now());
                 ()
             } );
 
     html! {
         <div class="plant-widget">
-            <h1>{plant_data.name}</h1>
-            <img src={plant_data.img_path}/> 
+            <h1>{props.plant_data.name.clone()}</h1>
+            <img src={props.plant_data.img_path.clone()}/> 
 
             <button onclick={reset_cb}>
                 { "Reset" }
