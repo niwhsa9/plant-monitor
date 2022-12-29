@@ -42,14 +42,26 @@ async fn main() {
         );
     let image_route = warp::path("img") .and(warp::fs::dir("temp"));
 
-    //let reset_time_route = 
-    //   warp::path("reeset")
-
+    let reset_time_route = 
+       warp::path("reset_time").
+       and(warp::path::param::<String>()).
+       map(|param : String| { println!("needs reset {}", param); warp::reply()});
+        
     let routes = 
-        warp::get().and(
+        (warp::get().and(
             data_route
             .or(image_route)
-        );
+        )).or(warp::post().and(
+            reset_time_route
+        ));
+
+        /* 
+    let routes = 
+        (warp::get().and(
+            data_route
+            .or(image_route)
+        )).or(warp::post().map(warp::reply));
+        */
 
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
 }

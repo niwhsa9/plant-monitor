@@ -37,8 +37,9 @@ fn PlantWidget(props : &PlantWidgetProps) -> Html {
             // indirection is necessary here due to lack of syntactic sugar for
             // capture by clone
             let name = name.clone();
+            let endpt = format!("/api/reset_time/{}", name);
             spawn_local( async move { 
-                            let r = Request::post("/api/reset_plant")
+                            let r = Request::post(&endpt)
                                 .body(name.clone())
                                 .send()
                                 .await;
