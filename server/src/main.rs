@@ -4,6 +4,8 @@ use warp::{Filter};
 use messages::msg::{Point, PlantData};
 use chrono::{DateTime, Utc, TimeZone, NaiveDate};
 
+const FORMAT: &'static str = "%Y-%m-%d %H:%M:%S";
+
 #[tokio::main]
 async fn main() {
     println!("Server starting");
@@ -29,7 +31,7 @@ async fn main() {
             name : String::from(row.read::<&str, _>("name")),
             img_path : String::from(row.read::<&str, _>("img")),
             last_water_time : Utc.datetime_from_str(
-                row.read::<&str, _>("water"), "%Y-%m-%d %H:%M:%S").unwrap(),
+                row.read::<&str, _>("water"), FORMAT).unwrap(),
         };
         data.push(e);
     }
@@ -45,7 +47,15 @@ async fn main() {
     let reset_time_route = 
        warp::path("reset_time").
        and(warp::path::param::<String>()).
-       map(|param : String| { println!("needs reset {}", param); warp::reply()});
+       map(|name : String| {
+        let query = format!("
+            UPDATE plants SET water='{}' where name='{}'; ",
+            Utc::now().format(FORMAT), name
+        );
+        //connection.execute(query).unwrap();
+        warp::reply()
+         // write to plants idx
+        });
         
     let routes = 
         (warp::get().and(
