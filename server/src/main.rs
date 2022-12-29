@@ -1,8 +1,8 @@
-use std::{rc::Rc, sync::Arc};
+use std::{sync::Arc, sync::Mutex};
 
 use warp::{Filter};
-use messages::msg::{Point, PlantData};
-use chrono::{DateTime, Utc, TimeZone, NaiveDate};
+use messages::msg::{PlantData};
+use chrono::{Utc, TimeZone};
 
 const FORMAT: &'static str = "%Y-%m-%d %H:%M:%S";
 
@@ -11,17 +11,17 @@ async fn main() {
     println!("Server starting");
     let mut data = Vec::<PlantData>::new();
 
-    // Issue database transactions and cache
-    let connection = sqlite::open("plants.db").unwrap();
+    // Issue initial database reads and cache
+    let connection = Arc::new(Mutex::new(sqlite::open("plants.db").unwrap()));
     let query = "
         CREATE TABLE IF NOT EXISTS plants (name TEXT, img TEXT, water DATETIME, PRIMARY KEY (name));
         INSERT OR IGNORE INTO plants VALUES ('Claude', '/api/img/plant.jpg', '2022-09-24 09:05:00' );
         INSERT OR IGNORE INTO plants VALUES ('Jacobi', '/api/img/plant.jpg', '2022-09-25 09:05:00' );
     ";
-    connection.execute(query).unwrap();
+    connection.lock().unwrap().execute(query).unwrap();
     
     let query = "SELECT * from plants";
-    for row in connection
+    for row in connection.lock().unwrap()
         .prepare(query)
         .unwrap()
         .into_iter()
@@ -47,16 +47,22 @@ async fn main() {
     let reset_time_route = 
        warp::path("reset_time").
        and(warp::path::param::<String>()).
-       map(|name : String| {
+       map(move|name : String| {
+        let new_time = Utc::now();
+        let new_time_str = new_time.format(FORMAT);
+        // Update cache
+        //data_ptr[0].name = String::from("LOl");
+
+        // Write through to disk as well
         let query = format!("
             UPDATE plants SET water='{}' where name='{}'; ",
-            Utc::now().format(FORMAT), name
+            new_time_str, name
         );
-        //connection.execute(query).unwrap();
+        connection.lock().unwrap().execute(query).unwrap();
         warp::reply()
-         // write to plants idx
         });
-        
+
+    // Serve API endpoints    
     let routes = 
         (warp::get().and(
             data_route
@@ -64,14 +70,5 @@ async fn main() {
         )).or(warp::post().and(
             reset_time_route
         ));
-
-        /* 
-    let routes = 
-        (warp::get().and(
-            data_route
-            .or(image_route)
-        )).or(warp::post().map(warp::reply));
-        */
-
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
 }
