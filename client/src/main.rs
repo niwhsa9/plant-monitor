@@ -28,6 +28,7 @@ fn PlantWidget(props : &PlantWidgetProps) -> Html {
             format!("{} days", diff.num_days()) 
         } else { 
             format!("{} hours", diff.num_hours()) 
+            //format!("{} hours", diff.num_seconds()) 
         };
 
     // Button callback

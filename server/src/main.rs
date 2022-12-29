@@ -1,4 +1,4 @@
-use std::{sync::Arc, sync::Mutex};
+use std::{sync::Arc, sync::Mutex, borrow::BorrowMut};
 
 use warp::{Filter};
 use messages::msg::{PlantData};
@@ -19,7 +19,7 @@ async fn main() {
         INSERT OR IGNORE INTO plants VALUES ('Jacobi', '/api/img/plant.jpg', '2022-09-25 09:05:00' );
     ";
     connection.lock().unwrap().execute(query).unwrap();
-    
+
     let query = "SELECT * from plants";
     for row in connection.lock().unwrap()
         .prepare(query)
@@ -35,23 +35,29 @@ async fn main() {
         };
         data.push(e);
     }
-    let data_ptr = Arc::new(data);
-
+    let data_ptr = Arc::new(Mutex::new(data));
+    let data_ptr_clone = data_ptr.clone();
+    // Return data about all available plants
     let data_route = 
         warp::path("plant_data").map( move || { 
-            warp::reply::json(&*data_ptr)
+            warp::reply::json(&*(data_ptr.lock().unwrap()))
             }
         );
     let image_route = warp::path("img") .and(warp::fs::dir("temp"));
 
+    // Handle a request to reset watering time of a plant
     let reset_time_route = 
        warp::path("reset_time").
        and(warp::path::param::<String>()).
        map(move|name : String| {
         let new_time = Utc::now();
         let new_time_str = new_time.format(FORMAT);
+
         // Update cache
-        //data_ptr[0].name = String::from("LOl");
+        let mut data = data_ptr_clone.lock().unwrap();
+        let mut i = data.iter_mut();
+        let res = i.find(|x| x.name == name ).unwrap();
+        res.last_water_time = new_time;
 
         // Write through to disk as well
         let query = format!("
