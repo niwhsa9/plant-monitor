@@ -67,6 +67,27 @@ body {
 
 }
 
+.topbar button {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+
+  border: none;
+  outline: none;
+  background-color: inherit;
+  font-family: inherit; /* Important for vertical align on mobile phones */
+  margin: 0; /* Important for vertical align on mobile phones */
+}
+
+.topbar button:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+
 .topbar a:hover {
   background-color: #ddd;
   color: black;

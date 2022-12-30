@@ -126,7 +126,8 @@ impl Component for Dashboard {
                 <> 
                 <div class="topbar">
                     <a class="active" href="#home">{String::from("Home")}</a>
-                    <a href="#home">{String::from("Data")}</a>
+                    //<a href="#home">{String::from("Data")}</a>
+                    <button>{String::from("New Plant")}</button>
                 </div>
                 <div class="widgets-grid">
                     {self.plants.iter().map(|plant| { html! {<PlantWidget plant_data={plant.clone()}/>} }).collect::<Html>()}
