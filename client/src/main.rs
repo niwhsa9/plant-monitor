@@ -67,14 +67,26 @@ fn PlantWidget(props : &PlantWidgetProps) -> Html {
 /*
  * Top Level Application Dashboard
  */
+
+#[derive(Properties, PartialEq, Clone)]
+pub struct NewPlantDialogueProps {
+}
+
+
+#[function_component]
+fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html { 
+    html! { <p>{String::from("test")}</p>}
+}
 pub struct Dashboard {
     // TODO: Refactor out - API design is poor, if API request is per plant
     // then each PlantWidget may request its own data in create() and maintain
     // its own internal state
-    plants : Vec<PlantData>
+    plants : Vec<PlantData>,
+    new_plant_dialogue : bool
 }
 pub enum DashboardMsg {
-    DataReady(Vec<PlantData>)
+    DataReady(Vec<PlantData>),
+    NewPlant
 }
 impl Dashboard {
     // Retrieves plant data from the server for the application 
@@ -101,19 +113,24 @@ impl Component for Dashboard {
             Self::Message::DataReady(data) => {
                 self.plants = data;
                 return true;
+            },
+            Self::Message::NewPlant => {
+                self.new_plant_dialogue = true;
+                return true;
             }
         }
     }
 
     fn create(ctx : &Context<Self>) -> Self {
         // Create the dashboard, register callback to populate data, and dispatch GET
-        let dash = Self{plants : vec![]};
+        let dash = Self{plants : vec![], new_plant_dialogue : false};
         let data_cb = ctx.link().callback(Self::Message::DataReady);
         dash.get_plant_data(data_cb);
         return dash
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
+        let new_plant_button = ctx.link().callback(|_| Self::Message::NewPlant );
         match &self.plants.len() {
             // Display loading screen while waiting for GET
             0 => html! {
@@ -127,11 +144,14 @@ impl Component for Dashboard {
                 <div class="topbar">
                     <a class="active" href="#home">{String::from("Home")}</a>
                     //<a href="#home">{String::from("Data")}</a>
-                    <button>{String::from("New Plant")}</button>
+                    <button onclick={new_plant_button}> {String::from("New Plant") }</button>
                 </div>
                 <div class="widgets-grid">
                     {self.plants.iter().map(|plant| { html! {<PlantWidget plant_data={plant.clone()}/>} }).collect::<Html>()}
                 </div>
+                if self.new_plant_dialogue {
+                    <NewPlantDialogue/>
+                }
                 </>
             }
         } 

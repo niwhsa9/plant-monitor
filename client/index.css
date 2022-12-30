@@ -80,6 +80,7 @@ body {
   background-color: inherit;
   font-family: inherit; /* Important for vertical align on mobile phones */
   margin: 0; /* Important for vertical align on mobile phones */
+  cursor:pointer;
 }
 
 .topbar button:hover {
