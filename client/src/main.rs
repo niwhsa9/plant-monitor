@@ -75,7 +75,14 @@ pub struct NewPlantDialogueProps {
 
 #[function_component]
 fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html { 
-    html! { <p>{String::from("test")}</p>}
+    html! { 
+        <div class="modal">
+            <div class="modal-content">
+                <p>{String::from("test")}
+                </p>
+            </div>
+        </div>
+    }
 }
 pub struct Dashboard {
     // TODO: Refactor out - API design is poor, if API request is per plant
