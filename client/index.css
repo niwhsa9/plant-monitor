@@ -114,9 +114,16 @@ body {
 
 /* Modal Content/Box */
 .modal-content {
-  background-color: #fefefe;
+  background-color: #038b59;
   margin: 15% auto; /* 15% from the top and centered */
   padding: 20px;
   border: 1px solid #888;
   width: 500px; /* Could be more or less, depending on screen size */
+  text-align: center;
+  color: white;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+  /*font-family: Arial;*/
+}
+.modal-header {
+  background-color: #195776;
 }

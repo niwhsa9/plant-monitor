@@ -78,8 +78,13 @@ fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html {
     html! { 
         <div class="modal">
             <div class="modal-content">
-                <p>{String::from("test")}
-                </p>
+                <div class="modal-header"> 
+                    <h1> {String::from("New Plant")} </h1>
+                </div>
+                <form>
+                <label for="name">{String::from("Name")}</label><br/>
+                <input type="text" id="fname" name="fname"/><br/>
+                </form>
             </div>
         </div>
     }
