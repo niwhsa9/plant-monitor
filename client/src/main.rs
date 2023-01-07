@@ -81,9 +81,11 @@ fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html {
                 <div class="modal-header"> 
                     <h1> {String::from("New Plant")} </h1>
                 </div>
-                <form>
-                <label for="name">{String::from("Name")}</label><br/>
-                <input type="text" id="fname" name="fname"/><br/>
+                <form enctype="multipart/form-data" method="post">
+                    <label for="name">{String::from("Name")}</label><br/>
+                    <input type="text" id="fname" name="fname"/><br/>
+                    <input type="file" name="image" accept="image/png, image/jpeg"/>
+                    <input type="submit" value="Submit"/>
                 </form>
             </div>
         </div>
