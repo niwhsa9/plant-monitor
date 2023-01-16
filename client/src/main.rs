@@ -84,7 +84,7 @@ fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html {
                 <form action="/api" enctype="multipart/form-data" method="post">
                     <label for="name">{String::from("Name")}</label><br/>
                     <input type="text" id="fname" name="fname"/><br/>
-                    <input type="file" name="image" accept="image/png, image/jpeg"/>
+                    //<input type="file" name="image" accept="image/png, image/jpeg"/>
                     <input type="submit" value="Submit"/>
                 </form>
             </div>
