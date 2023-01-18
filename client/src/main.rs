@@ -75,17 +75,22 @@ pub struct NewPlantDialogueProps {
 
 #[function_component]
 fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html { 
+
+    let submit_cb = Callback::from(|e : SubmitEvent| { 
+        e.prevent_default();
+    });
+
     html! { 
         <div class="modal">
             <div class="modal-content">
                 <div class="modal-header"> 
                     <h1> {String::from("New Plant")} </h1>
                 </div>
-                <form action="/api" enctype="multipart/form-data" method="post">
+                <form action="/api" enctype="multipart/form-data" method="post" onsubmit={submit_cb}>
                     <label for="name">{String::from("Name")}</label><br/>
                     <input type="text" id="fname" name="fname"/><br/>
-                    //<input type="file" name="image" accept="image/png, image/jpeg"/>
-                    <input type="submit" value="Submit"/>
+                    <input type="file" name="image" accept="image/png, image/jpeg"/>
+                    <input type="submit" value="Submit" />
                 </form>
             </div>
         </div>
