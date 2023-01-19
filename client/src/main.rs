@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use wasm_bindgen::JsCast;
-use web_sys::{HtmlInputElement, File};
+use web_sys::{HtmlInputElement, File, Blob};
 use yew::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 use reqwasm::http::*;
@@ -88,9 +88,10 @@ fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html {
             e.prevent_default();
             let form = FormData::new().unwrap();
             form.append_with_str("plant_name", &*plant_name_handle).unwrap();
-            let file = &*plant_image_handle;
-            let blob = (*plant_image_handle.unwrap());
-            form.append_with_blob_and_filename("fname", &blob, &file.as_ref().unwrap().name());
+            let file = (&*plant_image_handle).as_ref();
+            let blob : &Blob = file.unwrap();
+            //(*plant_image_handle.unwrap());
+            form.append_with_blob_and_filename("fname", blob, &file.unwrap().name()).unwrap();
 
             spawn_local( async move { 
                             let r = Request::post("/api")

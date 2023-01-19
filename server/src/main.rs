@@ -93,7 +93,7 @@ async fn main() {
         }).map(|v : Vec<(String, Vec<u8>)>| { 
             for p in v.iter() {
                 let (name, data) = p; 
-                println!("recieved {}", name);
+                println!("recieved {} {}", name, String::from_utf8(data.to_vec()).unwrap());
             }
             warp::reply()
             //warp::redirect(Uri::from_static("/v2")) //want ..
