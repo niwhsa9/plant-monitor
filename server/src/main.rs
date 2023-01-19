@@ -95,8 +95,8 @@ async fn main() {
                 let (name, data) = p; 
                 println!("recieved {}", name);
             }
-            //warp::reply()
-            warp::redirect(Uri::from_static("/v2")) //want ..
+            warp::reply()
+            //warp::redirect(Uri::from_static("/v2")) //want ..
         });
     // Serve API endpoints    
     let routes = 

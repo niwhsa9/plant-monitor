@@ -1,5 +1,7 @@
 use std::rc::Rc;
 
+use wasm_bindgen::JsCast;
+use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 use reqwasm::http::*;
@@ -75,15 +77,34 @@ pub struct NewPlantDialogueProps {
 
 #[function_component]
 fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html { 
-    let plant_name = use_state(|| "");
+    let plant_name_handle = use_state(String::default);
 
-    let pn = plant_name.clone();
-    let submit_cb = Callback::from(move |e : SubmitEvent| { 
-        e.prevent_default();
-        let form = FormData::new().unwrap();
-        log::info!("typed name {}", *pn)
-        //form.append_with_str("fname", )
-    });
+    //let pn = plant_name.clone();
+    let submit_cb = { 
+        let plant_name_handle = plant_name_handle.clone();
+        Callback::from(move |e : SubmitEvent| { 
+            e.prevent_default();
+            let form = FormData::new().unwrap();
+            form.append_with_str("plant_name", &*plant_name_handle).unwrap();
+            //log::info!("{}", (*form).as_string().unwrap());
+
+            spawn_local( async move { 
+                            let r = Request::post("/api")
+                                .body(&*form)
+                                .send()
+                                .await;
+                        });
+            
+        })
+
+    };
+    let name_change_cb = { 
+        let plant_name_handle = plant_name_handle.clone();
+        Callback::from(move |e : Event| {
+            let target = e.target().expect("");
+            plant_name_handle.set(target.unchecked_into::<HtmlInputElement>().value());
+        })
+    };
 
     //log::info!("typed name {}", *plant_name);
 
@@ -95,7 +116,7 @@ fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html {
                 </div>
                 <form action="/api" enctype="multipart/form-data" method="post" onsubmit={submit_cb}>
                     <label for="name">{String::from("Name")}</label><br/>
-                    <input type="text" id="fname" name="fname" value={*plant_name}/><br/>
+                    <input type="text" id="fname" name="fname" onchange={name_change_cb}/><br/>
                     <input type="file" name="image" accept="image/png, image/jpeg"/>
                     <input type="submit" value="Submit" />
                 </form>
