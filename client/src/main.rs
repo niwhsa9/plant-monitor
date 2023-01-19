@@ -75,10 +75,17 @@ pub struct NewPlantDialogueProps {
 
 #[function_component]
 fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html { 
+    let plant_name = use_state(|| "");
 
-    let submit_cb = Callback::from(|e : SubmitEvent| { 
+    let pn = plant_name.clone();
+    let submit_cb = Callback::from(move |e : SubmitEvent| { 
         e.prevent_default();
+        let form = FormData::new().unwrap();
+        log::info!("typed name {}", *pn)
+        //form.append_with_str("fname", )
     });
+
+    //log::info!("typed name {}", *plant_name);
 
     html! { 
         <div class="modal">
@@ -88,7 +95,7 @@ fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html {
                 </div>
                 <form action="/api" enctype="multipart/form-data" method="post" onsubmit={submit_cb}>
                     <label for="name">{String::from("Name")}</label><br/>
-                    <input type="text" id="fname" name="fname"/><br/>
+                    <input type="text" id="fname" name="fname" value={*plant_name}/><br/>
                     <input type="file" name="image" accept="image/png, image/jpeg"/>
                     <input type="submit" value="Submit" />
                 </form>
