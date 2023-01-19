@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use wasm_bindgen::JsCast;
-use web_sys::HtmlInputElement;
+use web_sys::{HtmlInputElement, File};
 use yew::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 use reqwasm::http::*;
@@ -78,15 +78,19 @@ pub struct NewPlantDialogueProps {
 #[function_component]
 fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html { 
     let plant_name_handle = use_state(String::default);
+    let plant_image_handle : UseStateHandle<Option<File>>= use_state(|| None);
 
     //let pn = plant_name.clone();
     let submit_cb = { 
         let plant_name_handle = plant_name_handle.clone();
+        let plant_image_handle = plant_image_handle.clone();
         Callback::from(move |e : SubmitEvent| { 
             e.prevent_default();
             let form = FormData::new().unwrap();
             form.append_with_str("plant_name", &*plant_name_handle).unwrap();
-            //log::info!("{}", (*form).as_string().unwrap());
+            let file = &*plant_image_handle;
+            let blob = (*plant_image_handle.unwrap());
+            form.append_with_blob_and_filename("fname", &blob, &file.as_ref().unwrap().name());
 
             spawn_local( async move { 
                             let r = Request::post("/api")
@@ -105,6 +109,14 @@ fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html {
             plant_name_handle.set(target.unchecked_into::<HtmlInputElement>().value());
         })
     };
+    let file_change_cb = { 
+        let plant_image_handle = plant_image_handle.clone();
+        Callback::from(move |e : Event| {
+            let target = e.target().expect("");
+            let file_list = target.unchecked_into::<HtmlInputElement>().files().unwrap();
+            plant_image_handle.set(file_list.get(0));
+        })
+    };
 
     //log::info!("typed name {}", *plant_name);
 
@@ -117,7 +129,7 @@ fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html {
                 <form action="/api" enctype="multipart/form-data" method="post" onsubmit={submit_cb}>
                     <label for="name">{String::from("Name")}</label><br/>
                     <input type="text" id="fname" name="fname" onchange={name_change_cb}/><br/>
-                    <input type="file" name="image" accept="image/png, image/jpeg"/>
+                    <input type="file" name="image" accept="image/png, image/jpeg" onchange={file_change_cb}/>
                     <input type="submit" value="Submit" />
                 </form>
             </div>
