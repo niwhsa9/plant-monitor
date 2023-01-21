@@ -1,4 +1,4 @@
-use std::{sync::Arc, sync::Mutex, borrow::BorrowMut};
+use std::{sync::Arc, sync::Mutex, borrow::BorrowMut, path::Path, fs};
 use warp::{Filter, multipart, hyper::Uri};
 use messages::msg::{PlantData};
 use chrono::{Utc, TimeZone};
@@ -93,13 +93,26 @@ async fn main() {
         }).map(|v : Vec<(String, Vec<u8>)>| { 
             for p in v.iter() {
                 let (name, data) = p; 
-                println!("recieved {} {}", name, String::from_utf8(data.to_vec()).unwrap());
+                match name.as_str() {
+                    "plant_name" => {
+                        println!("recieved {} {}", name, String::from_utf8(data.to_vec()).unwrap());
+                    },
+                    "fname" => {
+                        println!("img size {}", data.len());
+                        //image::save_buffer("image.jpg", data, 500, 500, image::ColorType::Rgb8).unwrap()
+                        let path = Path::new("image.jpg");
+                        fs::write(path, data).unwrap();
+                    }
+                    _ => panic!()
+                }
+                //println!("recieved {} {}", name, String::from_utf8(data.to_vec()).unwrap());
             }
             warp::reply()
-            //warp::redirect(Uri::from_static("/v2")) //want ..
         });
+
     // Serve API endpoints    
     let routes = 
+        //warp::body::content_length_limit(100000).and
         (warp::get().and(
             data_route
             .or(image_route)

@@ -90,6 +90,7 @@ fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html {
             form.append_with_str("plant_name", &*plant_name_handle).unwrap();
             let file = (&*plant_image_handle).as_ref();
             let blob : &Blob = file.unwrap();
+            log::info!("blob size {}", blob.size());
             //(*plant_image_handle.unwrap());
             form.append_with_blob_and_filename("fname", blob, &file.unwrap().name()).unwrap();
 
@@ -115,6 +116,7 @@ fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html {
         Callback::from(move |e : Event| {
             let target = e.target().expect("");
             let file_list = target.unchecked_into::<HtmlInputElement>().files().unwrap();
+            log::info!("file list size {}", file_list.length());
             plant_image_handle.set(file_list.get(0));
         })
     };
@@ -127,7 +129,8 @@ fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html {
                 <div class="modal-header"> 
                     <h1> {String::from("New Plant")} </h1>
                 </div>
-                <form action="/api" enctype="multipart/form-data" method="post" onsubmit={submit_cb}>
+                // action="/api" enctype="multipart/form-data" method="post" 
+                <form onsubmit={submit_cb}>
                     <label for="name">{String::from("Name")}</label><br/>
                     <input type="text" id="fname" name="fname" onchange={name_change_cb}/><br/>
                     <input type="file" name="image" accept="image/png, image/jpeg" onchange={file_change_cb}/>

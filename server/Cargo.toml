@@ -15,3 +15,4 @@ sqlite = "0.30.3"
 messages = { path = "../messages" }
 futures-util = "0.3"
 bytes = "1"
+image = "0.24.5"
