@@ -72,6 +72,7 @@ fn PlantWidget(props : &PlantWidgetProps) -> Html {
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct NewPlantDialogueProps {
+    close_cb : Callback<()>
 }
 
 
@@ -84,6 +85,7 @@ fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html {
     let submit_cb = { 
         let plant_name_handle = plant_name_handle.clone();
         let plant_image_handle = plant_image_handle.clone();
+        let close_cb = props.close_cb.clone();
         Callback::from(move |e : SubmitEvent| { 
             e.prevent_default();
             let form = FormData::new().unwrap();
@@ -100,7 +102,8 @@ fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html {
                                 .send()
                                 .await;
                         });
-            
+            close_cb.emit(());
+           // props.close_cb.emit(());
         })
 
     };
@@ -149,7 +152,8 @@ pub struct Dashboard {
 }
 pub enum DashboardMsg {
     DataReady(Vec<PlantData>),
-    NewPlant
+    NewPlant,
+    CloseNewPlant
 }
 impl Dashboard {
     // Retrieves plant data from the server for the application 
@@ -181,6 +185,10 @@ impl Component for Dashboard {
                 self.new_plant_dialogue = true;
                 return true;
             }
+            Self::Message::CloseNewPlant => {
+                self.new_plant_dialogue = false;
+                return true;
+            }
         }
     }
 
@@ -194,6 +202,7 @@ impl Component for Dashboard {
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         let new_plant_button = ctx.link().callback(|_| Self::Message::NewPlant );
+        let close_dialogue : Callback<()> = ctx.link().callback(|_| Self::Message::CloseNewPlant );
         match &self.plants.len() {
             // Display loading screen while waiting for GET
             0 => html! {
@@ -213,7 +222,7 @@ impl Component for Dashboard {
                     {self.plants.iter().map(|plant| { html! {<PlantWidget plant_data={plant.clone()}/>} }).collect::<Html>()}
                 </div>
                 if self.new_plant_dialogue {
-                    <NewPlantDialogue/>
+                    <NewPlantDialogue close_cb={close_dialogue}/>
                 }
                 </>
             }
