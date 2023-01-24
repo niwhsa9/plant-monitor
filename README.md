@@ -1,35 +1,34 @@
 # Plant Monitor
-This is a web application to monitor the health of your plants
+This is a web application to monitor your plants
 
 ## Current Features
-* View the status of the last watering date of your plant 
+* View and track the last watering date of all of your plants
 
 ## Technical Overview
 * JavaScript sucks
-* This application is written purely in Rust from end-to-end
-* Rust WASM via Yew is used for the front-end 
-* The server side application stores data with SQLite
-* Warp (with Tokio) is used to map api requests 
+* This application is written in Rust from end-to-end
+* Rust WASM and Yew is used for the front-end, and deployed with Trunk
+* The server stores plant data in a SQLite db
 * Messages are serialized into JSON with Serde to pass around through HTTP 
-* Trunk is used to deploy WASM
 
 ## Planned Features
-* Plant health status indicator based on callibrated watering schedule
-* Growth tracking of your plants over time
-* Integration with moisture sensors for calibrations and more accurate status
+* Plant health indicator based on pre-callibrated watering schedule
+* Moisture sensor integration
 
-## Installation
+## Release Installation
 TODO
 
-## Dev setup 
+## Dev Installation 
 1. Git clone this repository
 2. Install Rust
-3. Get trunk `cargo install trunk`
+3. Get trunk `cargo install --git https://github.com/thedodd/trunk.git trunk`. Note that it is necessary to get trunk from master because the current binary release has a bug in the proxy code that prevents delivering large images in multipart/form-data
 4. Add WASM target `rustup target add wasm32-unknown-unknown`
 5. Run the server: `cargo run --bin plant-monitor-server`
 6. Run the client: `cd client && trunk serve --open`
 
 
 ## Credits:
+Some parts of the code are borrowed from other open-source projects. See below.
+
 * DateTime serialization: https://serde.rs/custom-date-format.html
 * Stylesheets for buttons and top bar: https://www.w3schools.com/css/default.asp 
