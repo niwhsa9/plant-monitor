@@ -187,6 +187,9 @@ impl Component for Dashboard {
             }
             Self::Message::CloseNewPlant => {
                 self.new_plant_dialogue = false;
+                self.plants.clear();
+                let data_cb = ctx.link().callback(Self::Message::DataReady);
+                self.get_plant_data(data_cb);
                 return true;
             }
         }
@@ -203,6 +206,7 @@ impl Component for Dashboard {
     fn view(&self, ctx: &Context<Self>) -> Html {
         let new_plant_button = ctx.link().callback(|_| Self::Message::NewPlant );
         let close_dialogue : Callback<()> = ctx.link().callback(|_| Self::Message::CloseNewPlant );
+
         match &self.plants.len() {
             // Display loading screen while waiting for GET
             0 => html! {
