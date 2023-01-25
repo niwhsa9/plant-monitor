@@ -1,19 +1,21 @@
 # Plant Monitor
 This is a web application to monitor your plants
 
+I mainly wrote this because I wanted to try WASM in Rust.
+
 ## Current Features
 * View and track the last watering date of all of your plants
 
 ## Technical Overview
-* JavaScript sucks
+* JavaScript (and dynamic typed languages in general) sucks, but Rust is cool
 * This application is written in Rust from end-to-end
 * Rust WASM and Yew is used for the front-end, and deployed with Trunk
 * The server stores plant data in a SQLite db
 * Messages are serialized into JSON with Serde to pass around through HTTP 
 
-## Planned Features
+## Potential Future Features
 * Plant health indicator based on pre-callibrated watering schedule
-* Moisture sensor integration
+* Moisture sensor integration 
 
 ## Release Installation
 TODO
