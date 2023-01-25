@@ -16,9 +16,13 @@ async fn main() {
     let connection = Arc::new(Mutex::new(sqlite::open("plants.db").unwrap()));
     let query = "
         CREATE TABLE IF NOT EXISTS plants (name TEXT, img TEXT, water DATETIME, PRIMARY KEY (name));
+    ";
+
+    /*
         INSERT OR IGNORE INTO plants VALUES ('Claude', '/api/image/plant.jpg', '2022-09-24 09:05:00' );
         INSERT OR IGNORE INTO plants VALUES ('Jacobi', '/api/image/plant.jpg', '2022-09-25 09:05:00' );
-    ";
+    */
+
     connection.lock().unwrap().execute(query).unwrap();
 
     let query = "SELECT * from plants";
