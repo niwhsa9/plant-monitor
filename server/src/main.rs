@@ -149,7 +149,7 @@ async fn main() {
 
     // Serve API endpoints
     let routes =
-        //warp::body::content_length_limit(100000).and
+        //warp::body::content_length_limit(100000000).and
         (warp::get().and(
             data_route
             .or(image_route)

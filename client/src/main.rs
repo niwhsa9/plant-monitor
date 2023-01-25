@@ -183,6 +183,9 @@ impl Component for Dashboard {
         match msg {
             Self::Message::DataReady(data) => {
                 self.plants = data;
+                if self.plants.len() == 0 {
+                    self.new_plant_dialogue = true;
+                }
                 return true;
             },
             Self::Message::NewPlant => {
@@ -213,11 +216,16 @@ impl Component for Dashboard {
 
         match &self.plants.len() {
             // Display loading screen while waiting for GET
+            // TODO: this is broken because first time users have no plants, causing
+            // us to get stuck here indefinitely. Change the vector to option<Vec> 
+            // and check against that 
+            /* 
             0 => html! {
                 <>
                 <p>{"Loading... "}</p>
                 </>
             },
+            */
             // Display widgets when they are available
             _ => html! {
                 <> 

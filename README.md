@@ -1,6 +1,8 @@
 # Plant Monitor
 This is a web application to monitor your plants
 
+![Demo](https://github.com/niwhsa9/plant-monitor/blob/master/demo.png?raw=true)
+
 I mainly wrote this because I wanted to try WASM in Rust.
 
 ## Current Features
