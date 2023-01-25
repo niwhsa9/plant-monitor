@@ -1,0 +1,2 @@
+#!/bin/bash
+/home/ashwin/.cargo/bin/trunk serve

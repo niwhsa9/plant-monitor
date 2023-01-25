@@ -4,6 +4,9 @@
 #public_url = "/"
 #dist = "../../dist"
 
+[serve]
+address = "192.168.1.4"
+
 [[proxy]]
 rewrite = "/api"
 backend = "http://localhost:3030"
