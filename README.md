@@ -7,8 +7,7 @@ I mainly wrote this because I wanted to try WASM in Rust.
 * View and track the last watering date of all of your plants
 
 ## Technical Overview
-* JavaScript (and dynamic typed languages in general) sucks, but Rust is cool
-* This application is written in Rust from end-to-end
+* This web application is written in Rust from end-to-end because Javascript and more generally, dynamic typing, suck
 * Rust WASM and Yew is used for the front-end, and deployed with Trunk
 * The server stores plant data in a SQLite db
 * Messages are serialized into JSON with Serde to pass around through HTTP 
