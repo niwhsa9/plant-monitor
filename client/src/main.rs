@@ -81,7 +81,6 @@ fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html {
     let plant_name_handle = use_state(String::default);
     let plant_image_handle : UseStateHandle<Option<File>>= use_state(|| None);
 
-    //let pn = plant_name.clone();
     let submit_cb = { 
         let plant_name_handle = plant_name_handle.clone();
         let plant_image_handle = plant_image_handle.clone();
@@ -102,12 +101,8 @@ fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html {
                                 .body(&*form)
                                 .send()
                                 .await;
-
-                    //close_cb.emit(());
                         close_cb_clone.emit(());
                         });
-            //close_cb.emit(());
-           // props.close_cb.emit(());
         })
 
     };
@@ -140,7 +135,12 @@ fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html {
                 <form onsubmit={submit_cb}>
                     <label for="name">{String::from("Name")}</label><br/>
                     <input type="text" id="fname" name="fname" onchange={name_change_cb}/><br/>
-                    <input type="file" name="image" accept="image/png, image/jpeg" onchange={file_change_cb}/>
+                    <div class="spacer"/>
+                    <label for="file-upload" class="custom-file-upload">
+                        {String::from("Select File")}
+                        <input id="file-upload" type="file" name="image" accept="image/png, image/jpeg" onchange={file_change_cb}/>
+                    </label>
+                    <div class="spacer"/>
                     <input type="submit" value="Submit" />
                 </form>
             </div>

@@ -124,6 +124,26 @@ body {
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
   /*font-family: Arial;*/
 }
+
+.modal-content .spacer {
+  padding: 20px;
+}
+
+.modal-content input {
+  text-align: center;
+}
+
+.modal-content input[type="file"] {
+    display: none;
+}
+
+.custom-file-upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
 .modal-header {
-  background-color: #195776;
+  /*background-color: #195776;*/
 }
