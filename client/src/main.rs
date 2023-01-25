@@ -95,14 +95,18 @@ fn NewPlantDialogue(props : &NewPlantDialogueProps) -> Html {
             log::info!("blob size {}", blob.size());
             //(*plant_image_handle.unwrap());
             form.append_with_blob_and_filename("fname", blob, &file.unwrap().name()).unwrap();
-
+            
+            let close_cb_clone = close_cb.clone();
             spawn_local( async move { 
                             let r = Request::post("/api")
                                 .body(&*form)
                                 .send()
                                 .await;
+
+                    //close_cb.emit(());
+                        close_cb_clone.emit(());
                         });
-            close_cb.emit(());
+            //close_cb.emit(());
            // props.close_cb.emit(());
         })
 
