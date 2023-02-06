@@ -1,0 +1,11 @@
+[Unit]
+Description=Plant Monitor Dashboard
+
+[Service]
+User=ashwin
+WorkingDirectory=/home/ashwin/source/personal/plant-monitor/server
+ExecStart=/home/ashwin/source/personal/plant-monitor/server/run
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
